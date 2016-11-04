@@ -9,6 +9,7 @@ import Data.Array ((..))
 import Data.Char (toCharCode)
 import Data.Generic (gShow, class Generic)
 import Data.Int (toNumber)
+import Color
 
 type Selector = String
 foreign import data Peers :: *        -- a D3Selection that's passed back in some callbacks
@@ -26,21 +27,39 @@ data D3Selection d = DocumentSelect Selector
                    | Data      (D3Selection d) d
                    | Remove    (D3Selection d)
                    | Append    (D3ElementType d)
+                   | Enter     (D3Selection d)
+                   | Exit      (D3Selection d)
 
 data D3ElementType d =  Circle (Attrs d)
-                      | Rect (Attrs d)
-                      | Path (Attrs d)
-                      | Image (Attrs d)
-                      | Text (Attrs d)
-                      | Group (Array (D3ElementType d))
+                      | Rect   (Attrs d)
+                      | Path   (Attrs d)
+                      | Image  (Attrs d)
+                      | Text   (Attrs d)
+                      | Group  (Array (D3ElementType d))
 
+type SVGPathString = String -- could validate this here at least with runtime constructor
 type Attrs d = Array (Attr d)
-
-data Attr d  = CX (ValueOrCallback d Number)
-             | CY (ValueOrCallback d Number)
-             | R  (ValueOrCallback d Number)
-             | Style String (ValueOrCallback d String)
-             | EventHandlerS Event (Callback d String)
+data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
+             | CY                  (ValueOrCallback d Number)  -- circles only
+             | R                   (ValueOrCallback d Number)  -- circles only
+             | Fill                (ValueOrCallback d Color)
+             | X                   (ValueOrCallback d Number)
+             | Y                   (ValueOrCallback d Number)
+             | Id                  (ValueOrCallback d String)
+             | Height              (ValueOrCallback d Number)
+             | Width               (ValueOrCallback d Number)
+             | Stroke              (ValueOrCallback d Color)
+             | D                   (ValueOrCallback d SVGPathString)
+             | StrokeWidth         (ValueOrCallback d Number)
+             | StrokeOpacity       (ValueOrCallback d Number)
+             | FillOpacity         (ValueOrCallback d Number)
+             | StrokeLineCap       (ValueOrCallback d String) -- Round | Butt | Square
+             | PatternUnits        (ValueOrCallback d String) -- userSpaceOnUse | objectBoundingBox
+             | Opacity             (ValueOrCallback d Number)
+             | Style        String (ValueOrCallback d String)
+             | Class               (ValueOrCallback d String)
+             | Type                (ValueOrCallback d String) -- images only
+             | EventHandlerS Event (Callback d String) -- click | mouseenter | mouseleave | mouseover
              | EventHandlerN Event (Callback d Number)
 
 -- we're going to validate the Attr against the ElementType they're being
@@ -74,6 +93,8 @@ instance showD3Selection :: Show d => Show (D3Selection d) where
   show (Data selection d)          = "Data " <> show d <> " bound to " <> show selection
   show (Remove selection)          = "Remove " <> show selection
   show (Append _)                  = "Append"
+  show (Enter _)                   = "Enter"
+  show (Exit _)                    = "Exit"
 
 -- | if you could define a Semigroup for Selections then you could <> them
 -- | but would it make sense for all the constructors above?
