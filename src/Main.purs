@@ -25,17 +25,17 @@ data D3Selection d = DocumentSelect Selector
                    | Merge     (D3Selection d) (D3Selection d)
                    | Data      (D3Selection d) d
                    | Remove    (D3Selection d)
-                   | Append    (D3ElementRecipe d)
+                   | Append    (D3ElementType d)
 
-data D3ElementType d =  Circle
-                      | Rect
-                      | Path
-                      | Image
-                      | Group (Array (D3ElementRecipe d))
-                      | Text
+data D3ElementType d =  Circle (Attrs d)
+                      | Rect (Attrs d)
+                      | Path (Attrs d)
+                      | Image (Attrs d)
+                      | Text (Attrs d)
+                      | Group (Array (D3ElementType d))
 
-data D3ElementRecipe d = D3Recipe (D3ElementType d) (Array (Attr d))
---
+type Attrs d = Array (Attr d)
+
 data Attr d  = CX (ValueOrCallback d Number)
              | CY (ValueOrCallback d Number)
              | R  (ValueOrCallback d Number)
@@ -44,9 +44,9 @@ data Attr d  = CX (ValueOrCallback d Number)
              | EventHandlerN Event (Callback d Number)
 
 -- we're going to validate the Attr against the ElementType they're being
--- invoked on - this will be runtime exception, unfortunately but it will be
--- deterministic at least, seems like maybe GADT's are what's needed for this?
--- not sure.
+-- invoked on - so that you can't put a radius on text etc. This will be runtime
+-- exception, unfortunately but it will be deterministic at least, seems like
+-- maybe GADT's are what's needed for this? not sure.
 
 type MyData = { x :: Number, y :: Number, radius :: Number, something :: Number }
 
@@ -57,13 +57,12 @@ hoy = V 5.0
 ist :: ValueOrCallback Char Number
 ist = CB $ Lambda \d -> toNumber $ toCharCode d
 
-jud = D3Recipe Circle []
+jud = Circle []
 
-kef = D3Recipe Circle [CX hoy
-                     , CY (CB $ Lambda \d -> d.y)
-                     , R  (CB $ DIfn \d i -> d.something)]
+kef =  Circle [CX hoy
+             , CY (CB $ Lambda \d -> d.y)
+             , R  (CB $ DIfn \d i -> d.something)]
 
--- exampleRecipe = D3Recipe Circle [ CX hoy, CY (CB (Lambda \d -> d.y)), R (CB (DIfn \d i -> d.something)) ]
 
 
 -- | end of examples
