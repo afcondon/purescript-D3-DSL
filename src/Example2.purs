@@ -1,26 +1,21 @@
 module D3DSL.Example2 where
 
-import Prelude (($))
+import Prelude -- (($), (#))
 import Data.Array ((..))
 import D3DSL
 
-awn :: forall t7. D3Selection t7
-awn = DocumentSelect ".svg"
+circle :: D3Selection (Array Int)
+circle =  DocumentSelect ".svg"
+        # SubSelect "circle"
+        # Data (1..10)
 
-bel :: forall t9. D3Selection t9
-bel = SubSelect awn "circle"
+square :: D3Selection (Array Int)
+square =  DocumentSelect ".svg"
+        # SubSelect "square"
+        # Data (5..20)
 
-cep :: D3Selection (Array Int)
-cep = bel <-> 1..10
-
-dof :: D3Selection (Array Int)
-dof = bel <-> 5..20
-
-erg :: D3Selection (Array Int)
-erg = Merge dof cep
+awn :: D3Selection (Array Int)
+awn = Merge circle square
 
 fub :: D3Selection (Array Int)
-fub = Remove erg
-
-gid :: D3Selection (Array Int)
-gid = Remove $ Merge (bel <-> 1..10) (bel <-> 5..12)
+fub = awn # Exit # Remove
