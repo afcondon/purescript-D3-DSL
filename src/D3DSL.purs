@@ -15,13 +15,13 @@ data Callback d b =   Lambda (d -> b)
 data ValueOrCallback d b =  V b | CB (Callback d b)
 
 data D3Selection d = DocumentSelect Selector
-                   | SubSelect  Selector (D3Selection d)
-                   | Merge     (D3Selection d) (D3Selection d)
-                   | Data       d              (D3Selection d)
-                   | Append    (D3ElementType d)
-                   | Remove    (D3Selection d)
-                   | Enter     (D3Selection d)
-                   | Exit      (D3Selection d)
+                   | SubSelect  Selector         (D3Selection d)
+                   | Merge     (D3Selection d)   (D3Selection d)
+                   | Data       d                (D3Selection d)
+                   | Append    (D3ElementType d) (D3Selection d)
+                   | Remove                      (D3Selection d)
+                   | Enter                       (D3Selection d)
+                   | Exit                        (D3Selection d)
 
 
 data D3ElementType d =  Circle (Attrs d)
@@ -68,7 +68,7 @@ instance showD3Selection :: Show d => Show (D3Selection d) where
                                   <> "\n\t" <> show s2
   show (Data d s)           = "Data " <> show d <> " bound to " <> show s
   show (Remove s)           = "Remove " <> show s
-  show (Append element)     = "Append " <> show element
+  show (Append element s)   = "Append " <> show element <> " to " <> show s
   show (Enter s)            = "Enter "  <> show s
   show (Exit s)             = "Exit "   <> show s
 
