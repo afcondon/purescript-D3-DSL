@@ -6,6 +6,29 @@ import Data.Char (toCharCode)
 import Data.Array ((..))
 import D3DSL
 
+-- simple example with Array Int
+
+circle :: D3Selection Int
+circle =  DocumentSelect ".svg"
+        # SubSelect "circle"
+        # Data (1..10)
+        # Append (Circle [ CX $ V 5.0
+                         , CY $ F $ Lambda1 \d -> 10.0
+                         , R  $ F $ Lambda2 \d i -> 20.0 ])
+
+square :: D3Selection Int
+square =  DocumentSelect ".svg"
+        # SubSelect "square"
+        # Data (5..20)
+        # Append (Rect [ Height $ V 5.0
+                       , Width  $ F $ Lambda1 \d -> 10.0
+                       , Style "opacity" $ V "1.0" ])
+
+remove :: D3Selection Int
+remove = (Merge circle square) # Exit # Remove
+
+
+-- | examples of helper / lambda functions
 -- | let's have a data type
 type MyData = { x :: Number
               , y :: Number
@@ -13,38 +36,16 @@ type MyData = { x :: Number
               , something :: Number }
 
 
-circle :: D3Selection (Array Int)
-circle =  DocumentSelect ".svg"
-        # SubSelect "circle"
-        # Data (1..10)
-        # Append (Circle [ CX $ V 5.0
-                         , CY $ CB $ Lambda \d -> 10.0
-                         , R  $ CB $ DIfn \d i -> 20.0 ])
-
-square :: D3Selection (Array Int)
-square =  DocumentSelect ".svg"
-        # SubSelect "square"
-        # Data (5..20)
-        # Append (Rect [ Height $ V 5.0
-                       , Width  $ CB $ Lambda \d -> 10.0
-                       , Style "opacity" $ V "1.0" ])
-
-fub :: D3Selection (Array Int)
-fub = (Merge circle square) # Exit # Remove
-
-
--- | examples of helper / lambda functions
-
 hoy :: ValueOrCallback MyData Number
 hoy = V 5.0
 
 ist :: ValueOrCallback Char Number
-ist = CB $ Lambda \d -> toNumber $ toCharCode d
+ist = F $ Lambda1 \d -> toNumber $ toCharCode d
 
 jud :: ∀ d. D3ElementType d
 jud = Circle []
 
 kef :: D3ElementType MyData
 kef =  Circle [CX hoy
-             , CY (CB $ Lambda \d -> d.y)
-             , R  (CB $ DIfn \d i -> d.something)]
+             , CY (F $ Lambda1 \d -> d.y)
+             , R  (F $ Lambda2 \d i -> d.something)]

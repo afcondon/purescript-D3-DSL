@@ -1,23 +1,23 @@
 module D3DSL where
 
-import Prelude (class Show, show, (<>))
-import DOM.Event.Types (Event)
 import Color (Color)
+import DOM.Event.Types (Event)
+import Prelude (class Show, show, (<>))
 
 type Selector = String
 foreign import data Peers :: *        -- a D3Selection that's passed back in some callbacks
 foreign import data DomElement :: *   -- the `this` pointer in a callback, DOM element receiving an event
 
-data Callback d b =   Lambda (d -> b)
-                    | DIfn   (d -> Number -> b)
-                    | DINEfn (d -> Number -> Peers -> DomElement -> b)
+data Callback d b =   Lambda1 (d ->                                  b)
+                    | Lambda2 (d -> Number ->                        b)
+                    | Lambda4 (d -> Number -> Peers -> DomElement -> b)
 
-data ValueOrCallback d b =  V b | CB (Callback d b)
+data ValueOrCallback d b =  V b | F (Callback d b)
 
 data D3Selection d = DocumentSelect Selector
                    | SubSelect  Selector         (D3Selection d)
                    | Merge     (D3Selection d)   (D3Selection d)
-                   | Data       d                (D3Selection d)
+                   | Data      (Array d)         (D3Selection d)
                    | Append    (D3ElementType d) (D3Selection d)
                    | Remove                      (D3Selection d)
                    | Enter                       (D3Selection d)
@@ -106,7 +106,7 @@ instance showAttr :: Show (Attr d) where
 
 instance showValueOrCallback :: Show (ValueOrCallback d b) where
   show (V _)  = "Value"
-  show (CB _) = "Lambda"
+  show (F _) = "Lambda"
 
 eventToString :: Event -> String
 eventToString ev = "JS event"
