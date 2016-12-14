@@ -8,23 +8,25 @@ import D3DSL
 
 -- simple example with Array Int
 
-circle :: D3Selection Int
+circle :: D3Selection Int Int
 circle =  DocumentSelect ".svg"
-        # SubSelect "circle"
-        # Data (1..10)
-        # Append (Circle [ CX $ V 5.0
-                         , CY $ F $ Lambda1 \d -> 10.0
-                         , R  $ F $ Lambda2 \d i -> 20.0 ])
+        # Select "circle"
+        # DataA (1..10)
+        # Append SvgCircle
+        # Attrs [ CX $ V 5.0
+                , CY $ F $ Lambda1 \d -> 10.0
+                , R  $ F $ Lambda2 \d i -> 20.0 ]
 
-square :: D3Selection Int
+square :: D3Selection Int Int
 square =  DocumentSelect ".svg"
-        # SubSelect "square"
-        # Data (5..20)
-        # Append (Rect [ Height $ V 5.0
-                       , Width  $ F $ Lambda1 \d -> 10.0
-                       , Style "opacity" $ V "1.0" ])
+        # Select "square"
+        # DataA (5..20)
+        # Append SvgRect
+        # Attrs [ Height $ V 5.0
+                , Width  $ F $ Lambda1 \d -> 10.0
+                , Style "opacity" $ V "1.0" ]
 
-remove :: D3Selection Int
+remove :: D3Selection Int Int
 remove = (Merge circle square) # Exit # Remove
 
 
@@ -42,10 +44,11 @@ hoy = V 5.0
 ist :: ValueOrCallback Char Number
 ist = F $ Lambda1 \d -> toNumber $ toCharCode d
 
-jud :: ∀ d. D3ElementType d
-jud = Circle []
+jud :: D3ElementType
+jud = SvgCircle
 
-kef :: D3ElementType MyData
-kef =  Circle [CX hoy
-             , CY (F $ Lambda1 \d -> d.y)
-             , R  (F $ Lambda2 \d i -> d.something)]
+kef :: D3Selection MyData Number -> D3Selection MyData Number
+kef s = s # Append SvgCircle
+          # Attrs [ CX $ V 5.0
+                  , CY (F $ Lambda1 \d -> d.y)
+                  , R  (F $ Lambda2 \d i -> d.something)]
