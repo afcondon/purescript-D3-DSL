@@ -10,10 +10,10 @@ svg :: ∀ d i. D3Selection d i
 svg    = DocumentSelect "svg"
 
 width :: Number
-width  = getAttrN svg "width"
+width  = 950.0  -- getAttrN svg "width"
 
 height :: Number
-height = getAttrN svg "height"
+height = 600.0  -- getAttrN svg "height"
 
 g :: ∀ d i. D3Selection d i
 g      = svg # Append SvgGroup
