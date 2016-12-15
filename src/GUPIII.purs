@@ -1,6 +1,6 @@
 module GUPIII where
 
-import D3DSL
+import D3DSL.Base
 import Prelude (negate, show, (#), ($), (*), (/), (<>))
 -- | purely declarative code to set up the computation
 t :: D3Transition

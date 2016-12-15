@@ -9,7 +9,49 @@ import GUPIII
 
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do
+  log $ show (join $ toCharArray "this is this")
   log $ show (update $ join $ toCharArray "this is this")
-  log $ show circle
-  log $ show remove
-  log "hello sailor"
+  log $ show (exit   $ join $ toCharArray "this is this")
+  log $ show (enter  $ join $ toCharArray "this is this")
+
+{-
+Attrs: [X Lambda]
+Transition
+Attrs: [Class Value,Y Value,Style fill-opacity Value]
+Data ['t','h','i','s',' ','i','s',' ','t','h','i','s']
+    bound to SelectAll "text" in
+    Attrs: [Transform(translate(32,300.0))]
+    Append Group to
+        DocumentSelect  "svg"
+
+  text.exit()
+      .attr("class", "exit")
+    .transition(t)
+      .attr("y", 60)
+      .style("fill-opacity", 1e-6)
+      .remove();
+
+
+Remove
+Attrs: [Y Value,Style fill-opacity Value]
+Transition
+Attrs: [Class Value]
+Exit
+Data ['t','h','i','s',' ','i','s',' ','t','h','i','s']
+    bound to SelectAll "text" in
+    Attrs: [Transform(translate(32,300.0))]
+    Append Group to
+        DocumentSelect  "svg"
+
+Attrs: [Y Value,Style fill-opacity Value]
+Transition
+Attrs: [Text Lambda]
+Attrs: [Class Value,DY Value,Y Value,X Lambda,Style fill-opacity Value]
+Append Text to
+    Enter
+    Data ['t','h','i','s',' ','i','s',' ','t','h','i','s']
+        bound to SelectAll "text" in
+        Attrs: [Transform(translate(32,300.0))]
+        Append Group to
+            DocumentSelect  "svg"
+-}

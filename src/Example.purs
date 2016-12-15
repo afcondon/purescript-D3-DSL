@@ -4,7 +4,7 @@ import Prelude ((#), ($))
 import Data.Int (toNumber)
 import Data.Char (toCharCode)
 import Data.Array ((..))
-import D3DSL
+import D3DSL.Base
 
 -- simple example with Array Int
 

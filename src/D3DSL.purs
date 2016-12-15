@@ -1,4 +1,4 @@
-module D3DSL where
+module D3DSL.Base where
 
 import Color (Color)
 import DOM.Event.Types (Event)
@@ -90,18 +90,17 @@ instance showD3Selection :: Show d => Show (D3Selection d i) where
   show (DocumentSelectAll s) = "DocumentSelectAll " <> " \"" <> s <> "\""
   show (Select select s)    = "Select \""    <> select <> "\" in " <> show s
   show (SelectAll select s) = "SelectAll \"" <> select <> "\" in " <> show s
-  show (Merge s1 s2)        = "Merge: \n\t"  <> show s1
-                                  <> "\n\t"  <> show s2
-  show (Remove s)           = "Remove "      <> show s
-  show (Append element s)   = "Append "      <> show element <> " to " <> show s
-  show (Enter s)            = "Enter "       <> show s
-  show (Exit s)             = "Exit "        <> show s
-  show (Transition t s)     = "Transition "  <> show s
-  show (Attrs attrs s)      = "Attrs: "      <> show attrs
-  show (DataA d s)          = "Data " <> show d <> " bound to " <> show s
-  show (DataAI d _ s)       = "Data " <> show d <> " bound to " <> show s
-  show (DataH  d s)         = "Data " <> show d <> " bound to " <> show s
-  show (DataHI d _ s)       = "Data " <> show d <> " bound to " <> show s
+  show (Merge s1 s2)        = "Merge: \n\t"  <> show s1 <> "\n\t"  <> show s2
+  show (Append element s)   = "Append " <> show element <>  " to " <> show s
+  show (Remove s)           = "Remove "                            <> show s
+  show (Enter s)            = "Enter "                             <> show s
+  show (Exit s)             = "Exit "                              <> show s
+  show (Transition t s)     = "Transition "                        <> show s
+  show (Attrs attrs s)      = "Attrs: "      <> show attrs         <> show s
+  show (DataA d s)          = "Data " <> show d <> " bound to "    <> show s
+  show (DataAI d _ s)       = "Data " <> show d <> " bound to "    <> show s
+  show (DataH  d s)         = "Data " <> show d <> " bound to "    <> show s
+  show (DataHI d _ s)       = "Data " <> show d <> " bound to "    <> show s
 
 instance showD3ElementType :: Show D3ElementType where
   show SvgCircle = "Circle"
