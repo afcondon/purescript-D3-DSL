@@ -1,6 +1,7 @@
 module GUPIII where
 
-import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, D3Selection(..), D3Transition(..), Duration(..), ValueOrCallback(..), d3s, invisible, opaque, runD3)
+import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, D3Selection(..), D3Transition(..), Duration(..), ValueOrCallback(..), invisible, opaque)
+import D3DSL.Run (d3s, runD3)
 import Control.Monad.Eff (Eff)
 import DOM (DOM)
 import Prelude (Unit, negate, pure, show, unit, ($), (*), (<$>), (<>))

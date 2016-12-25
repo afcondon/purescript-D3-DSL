@@ -4,6 +4,7 @@ import Prelude (Unit, bind, show, ($))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.String (toCharArray)
+
 import D3DSL.Base (D3)
 import DOM (DOM)
 import GUPIII (doUpdate, enter, exit, join, update)

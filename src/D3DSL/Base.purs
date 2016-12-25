@@ -1,11 +1,9 @@
 module D3DSL.Base where
 
 import Color (Color)
-import DOM.Event.Types (Event)
 import Data.List
-import Control.Monad.Eff (Eff)
+import DOM.Event.Types (Event)
 import Prelude (class Ord, class Show, show, (<>), Unit)
-import Data.Foldable (class Foldable)
 import DOM (DOM)
 
 type Selector = String
@@ -19,9 +17,6 @@ foreign import data D3         :: ! -- the Effect of D3
 foreign import data Peers      :: * -- a D3Selection that's passed back in some callbacks
 foreign import data DomElement :: * -- the `this` pointer in a callback, DOM element receiving an event
 
--- foreign import runD3Fn :: ∀ d i eff. D3S d i -> Eff (d3::D3, dom::DOM|eff) Unit
-foreign import runD3Fn :: ∀ d i eff. String -> Eff (d3::D3, dom::DOM|eff) Unit
-
 foreign import getAttrN :: ∀ d i. D3Selection d i -> String -> Number
 foreign import getAttrS :: ∀ d i. D3Selection d i -> String -> String
 
@@ -29,26 +24,6 @@ foreign import invisible :: String
 foreign import opaque    :: String
 
 type D3S d i = List (D3Selection d i)
-
-d3s :: forall f a. (Foldable f) => f a -> List a
-d3s = fromFoldable
-
-runD3 :: ∀ d i eff. D3Selection d i -> Eff (d3::D3, dom::DOM|eff) Unit
-runD3 (DocumentSelect _)    = runD3Fn "DocumentSelect"
-runD3 (DocumentSelectAll _) = runD3Fn "DocumentSelectAll"
-runD3 (Select _)            = runD3Fn "Select"
-runD3 (SelectAll _)         = runD3Fn "SelectAll"
-runD3 (Merge _)             = runD3Fn "Merge"
-runD3 (Append _)            = runD3Fn "Append"
-runD3 Remove                = runD3Fn "Remove"
-runD3 Enter                 = runD3Fn "Enter"
-runD3 Exit                  = runD3Fn "Exit"
-runD3 (Transition _)        = runD3Fn "Transition"
-runD3 (Attrs _)             = runD3Fn "Attrs"
-runD3 (DataA _)             = runD3Fn "DataA"
-runD3 (DataH _)             = runD3Fn "DataH"
-runD3 (DataAI _ _)          = runD3Fn "DataAI"
-runD3 (DataHI _ _)          = runD3Fn "DataHI"
 
 data Duration = Seconds Int | MS Int
 
