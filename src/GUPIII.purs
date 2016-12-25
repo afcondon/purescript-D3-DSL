@@ -1,16 +1,9 @@
 module GUPIII where
 
-import D3DSL.Base
-import Data.List
-import Control.Monad.List.Trans (cons)
-import Data.Foldable (class Foldable, foldl)
-import Data.String (toCharArray)
-import Prelude (append, negate, show, (#), ($), (*), (/), (<>))
-
-type D3S d i = List (D3Selection d i)
-
-d3s :: forall f a. (Foldable f) => f a -> List a
-d3s = fromFoldable
+import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, D3Selection(..), D3Transition(..), Duration(..), ValueOrCallback(..), d3s, invisible, opaque, runD3)
+import Control.Monad.Eff (Eff)
+import DOM (DOM)
+import Prelude (Unit, negate, pure, show, unit, ($), (*), (<$>), (<>))
 
 -- | purely declarative code to set up the computation
 width :: Number
@@ -26,14 +19,14 @@ t = SimpleTransition $ MS 750
 svg :: forall i d. D3Selection d i
 svg    = DocumentSelect "svg"
 
-join :: forall t13. t13 -> D3S Char Char
-join myData = fromFoldable [ svg
-                           , SelectAll "text"
-                           , DataAI (toCharArray "this is this") (\d -> d)]
+join :: Array Char -> D3S Char Char
+join myData  = d3s [ svg
+                   , SelectAll "text"
+                   , DataAI myData (\d -> d)]
 
 -- exit :: D3Selection Char Char -> D3Selection Char Char
 exit :: D3S Char Char -> D3S Char Char
-exit s = s <> fromFoldable [ Exit
+exit s = s <> d3s [ Exit
                   , Attrs [ Class $ V "exit" ]
                   , Transition t
                   , Attrs [ Y $ V 60.0
@@ -41,14 +34,14 @@ exit s = s <> fromFoldable [ Exit
                   , Remove ]
 
 update :: D3S Char Char -> D3S Char Char
-update s = s <> fromFoldable [ Attrs [ Class $ V "update"
+update s = s <> d3s [ Attrs [ Class $ V "update"
                                     , Y     $ V 0.0
                                     , Style "fill-opacity" $ V opaque ]
                     , Transition t
                     , Attrs [ X $ F $ Lambda2 \d i -> i * 32.0 ] ]
 
 enter :: D3S Char Char -> D3S Char Char
-enter s = s <> fromFoldable [ Enter
+enter s = s <> d3s [ Enter
                     , Append SvgText
                     , Attrs [ Class $ V "enter"
                                     , DY $ V ".35em"
@@ -60,11 +53,14 @@ enter s = s <> fromFoldable [ Enter
                     , Attrs [ Y $ V 0.0
                             , Style "fill-opacity" $ V opaque ] ]
 
+
 -- now all the action happens when we run all these pure computations inside the
 -- D3 effect
--- doUpdate :: ∀ e. Array Char -> Eff (d3::D3, dom::DOM|eff) Unit
--- doUpdate myData = do
---   s <- runD3 join myData
---   runD3 exit s
---   runD3 update text
---   runD3 enter
+doUpdate :: ∀ e. Array Char -> Eff (d3::D3, dom::DOM|e) Unit
+doUpdate myData = do
+    -- result <- runD3 <$> (join myData)
+    let selection = join myData
+    let result = runD3 <$> selection
+    pure unit -- $ runD3 <$> selection
+    -- where selection = join myData
+    --       result =

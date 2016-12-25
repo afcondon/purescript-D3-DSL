@@ -3,16 +3,18 @@ module Main where
 import Prelude (Unit, bind, show, ($))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-import Data.String
--- import D3DSL.Example (remove, circle)
-import GUPIII
+import Data.String (toCharArray)
+import D3DSL.Base (D3)
+import DOM (DOM)
+import GUPIII (doUpdate, enter, exit, join, update)
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
+main :: forall e. Eff (d3::D3, dom::DOM, console :: CONSOLE | e) Unit
 main = do
-  log $ show (join $ toCharArray "this is this")
-  log $ show (update $ join $ toCharArray "this is this")
-  log $ show (exit   $ join $ toCharArray "this is this")
-  log $ show (enter  $ join $ toCharArray "this is this")
+    doUpdate (toCharArray "this is this")
+    log $ show (join   $ toCharArray "this is this")
+    log $ show (update $ join $ toCharArray "this is this")
+    log $ show (exit   $ join $ toCharArray "this is this")
+    log $ show (enter  $ join $ toCharArray "this is this")
 
 {-
 Attrs: [X Lambda]
