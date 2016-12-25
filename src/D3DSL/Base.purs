@@ -14,6 +14,7 @@ newtype Hierarchical d =
                  , datum    :: d
                  }
 foreign import data D3         :: ! -- the Effect of D3
+foreign import data Selection  :: *
 foreign import data Peers      :: * -- a D3Selection that's passed back in some callbacks
 foreign import data DomElement :: * -- the `this` pointer in a callback, DOM element receiving an event
 
