@@ -36,19 +36,19 @@ data ValueOrCallback d b =  V b
 data D3Selection d i =
      DocumentSelect    Selector
    | DocumentSelectAll Selector
-   | Select            Selector          (D3Selection d i)
-   | SelectAll         Selector          (D3Selection d i)
-   | Merge     (D3Selection d i)         (D3Selection d i)
-   | Append    D3ElementType             (D3Selection d i)
-   | Remove                              (D3Selection d i)
-   | Enter                               (D3Selection d i)
-   | Exit                                (D3Selection d i)
-   | Transition D3Transition             (D3Selection d i)
-   | Attrs     (Array (Attr d))          (D3Selection d i)
-   | DataA     (Array d)                 (D3Selection d i)
-   | DataH     (Hierarchical d)          (D3Selection d i)
-   | DataAI    (Array d)        (d -> i) (D3Selection d i)
-   | DataHI    (Hierarchical d) (d -> i) (D3Selection d i)
+   | Select            Selector
+   | SelectAll         Selector
+   | Merge     (D3Selection d i)
+   | Append    D3ElementType
+   | Remove
+   | Enter
+   | Exit
+   | Transition D3Transition
+   | Attrs     (Array (Attr d))
+   | DataA     (Array d)
+   | DataH     (Hierarchical d)
+   | DataAI    (Array d)        (d -> i)
+   | DataHI    (Hierarchical d) (d -> i)
 
 data D3ElementType = SvgCircle | SvgRect | SvgPath | SvgImage | SvgText | SvgGroup
 
@@ -88,19 +88,19 @@ data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
 instance showD3Selection :: Show d => Show (D3Selection d i) where
   show (DocumentSelect s)    = "DocumentSelect "    <> " \"" <> s <> "\""
   show (DocumentSelectAll s) = "DocumentSelectAll " <> " \"" <> s <> "\""
-  show (Select select s)    = "Select \""    <> select <> "\" in " <> show s
-  show (SelectAll select s) = "SelectAll \"" <> select <> "\" in " <> show s
-  show (Merge s1 s2)        = "Merge: \n\t"  <> show s1 <> "\n\t"  <> show s2
-  show (Append element s)   = "Append " <> show element <>  " to " <> show s
-  show (Remove s)           = "Remove "                            <> show s
-  show (Enter s)            = "Enter "                             <> show s
-  show (Exit s)             = "Exit "                              <> show s
-  show (Transition t s)     = "Transition "                        <> show s
-  show (Attrs attrs s)      = "Attrs: "      <> show attrs         <> show s
-  show (DataA d s)          = "Data " <> show d <> " bound to "    <> show s
-  show (DataAI d _ s)       = "Data " <> show d <> " bound to "    <> show s
-  show (DataH  d s)         = "Data " <> show d <> " bound to "    <> show s
-  show (DataHI d _ s)       = "Data " <> show d <> " bound to "    <> show s
+  show (Select select)       = "Select \""    <> select <> "\""
+  show (SelectAll select)    = "SelectAll \"" <> select <> "\""
+  show (Merge s)             = "Merge: \n\t"  <> show s <> "\n\t"
+  show (Append element)      = "Append " <> show element <>  " to "
+  show (Remove)              = "Remove"
+  show (Enter)               = "Enter"
+  show (Exit)                = "Exit"
+  show (Transition t)        = "Transition"
+  show (Attrs attrs)         = "Attrs: "      <> show attrs
+  show (DataA d)             = "Data " <> show d
+  show (DataAI d _)          = "Data " <> show d
+  show (DataH  d)            = "Data " <> show d
+  show (DataHI d _)          = "Data " <> show d
 
 instance showD3ElementType :: Show D3ElementType where
   show SvgCircle = "Circle"

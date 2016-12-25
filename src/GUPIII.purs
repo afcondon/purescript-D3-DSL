@@ -1,55 +1,64 @@
 module GUPIII where
 
 import D3DSL.Base
-import Prelude (negate, show, (#), ($), (*), (/), (<>))
+import Data.List
+import Control.Monad.List.Trans (cons)
+import Data.Foldable (class Foldable, foldl)
+import Data.String (toCharArray)
+import Prelude (append, negate, show, (#), ($), (*), (/), (<>))
+
+type D3S d i = List (D3Selection d i)
+
+d3s :: forall f a. (Foldable f) => f a -> List a
+d3s = fromFoldable
+
 -- | purely declarative code to set up the computation
-t :: D3Transition
-t = SimpleTransition $ MS 750
-
-svg :: ∀ d i. D3Selection d i
-svg    = DocumentSelect "svg"
-
 width :: Number
 width  = 950.0  -- getAttrN svg "width"
 
 height :: Number
 height = 600.0  -- getAttrN svg "height"
 
-g :: ∀ d i. D3Selection d i
-g      = svg # Append SvgGroup
-             # Attrs [ Transform $ "translate(32," <> show (height / 2.0) <> ")"]
+t :: D3Transition
+t = SimpleTransition $ MS 750
 
-join :: Array Char -> D3Selection Char Char
-join myData = g # SelectAll "text"
-                # DataAI myData \d -> d
+-- svg :: ∀ d i. D3Selection Char Char
+svg :: forall i d. D3Selection d i
+svg    = DocumentSelect "svg"
 
-exit :: D3Selection Char Char -> D3Selection Char Char
-exit s = s # Exit
-           # Attrs [ Class $ V "exit" ]
-           # Transition t
-           # Attrs [ Y $ V 60.0
-                   , Style "fill-opacity" $ V invisible ]
-           # Remove
+join :: forall t13. t13 -> D3S Char Char
+join myData = fromFoldable [ svg
+                           , SelectAll "text"
+                           , DataAI (toCharArray "this is this") (\d -> d)]
 
-update :: D3Selection Char Char -> D3Selection Char Char
-update s = s # Attrs [ Class $ V "update"
-                     , Y     $ V 0.0
-                     , Style "fill-opacity" $ V opaque ]
-             # Transition t
-             # Attrs [ X $ F $ Lambda2 \d i -> i * 32.0 ]
+-- exit :: D3Selection Char Char -> D3Selection Char Char
+exit :: D3S Char Char -> D3S Char Char
+exit s = s <> fromFoldable [ Exit
+                  , Attrs [ Class $ V "exit" ]
+                  , Transition t
+                  , Attrs [ Y $ V 60.0
+                          , Style "fill-opacity" $ V invisible ]
+                  , Remove ]
 
-enter :: D3Selection Char Char -> D3Selection Char Char
-enter s = s # Enter
-            # Append SvgText
-            # Attrs [ Class $ V "enter"
-                    , DY $ V ".35em"
-                    , Y  $ V (-60.0)
-                    , X  $ F $ Lambda2 \d i -> i * 32.0
-                    , Style "fill-opacity" $ V invisible ]
-            # Attrs [ Text $ F $ Lambda1 \d -> show d ]
-            # Transition t
-            # Attrs [ Y $ V 0.0
-                    , Style "fill-opacity" $ V opaque ]
+update :: D3S Char Char -> D3S Char Char
+update s = s <> fromFoldable [ Attrs [ Class $ V "update"
+                                    , Y     $ V 0.0
+                                    , Style "fill-opacity" $ V opaque ]
+                    , Transition t
+                    , Attrs [ X $ F $ Lambda2 \d i -> i * 32.0 ] ]
+
+enter :: D3S Char Char -> D3S Char Char
+enter s = s <> fromFoldable [ Enter
+                    , Append SvgText
+                    , Attrs [ Class $ V "enter"
+                                    , DY $ V ".35em"
+                                    , Y  $ V (-60.0)
+                                    , X  $ F $ Lambda2 \d i -> i * 32.0
+                                    , Style "fill-opacity" $ V invisible ]
+                    , Attrs [ Text $ F $ Lambda1 \d -> show d ]
+                    , Transition t
+                    , Attrs [ Y $ V 0.0
+                            , Style "fill-opacity" $ V opaque ] ]
 
 -- now all the action happens when we run all these pure computations inside the
 -- D3 effect
