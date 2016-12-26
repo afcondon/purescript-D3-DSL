@@ -1,11 +1,12 @@
 module D3DSL.Run where
 
 import Control.Monad.Eff (Eff)
-import D3DSL.Base (D3, D3Selection, Selection(..))
+import D3DSL.Base (Attr, D3, D3ElementType, D3Selection, D3Transition, Hierarchical(..), Selection(..))
 import DOM (DOM)
 import Data.Foldable (class Foldable)
 import Data.Function.Eff (EffFn1, EffFn2, runEffFn1, runEffFn2)
 import Data.List (List, fromFoldable)
+import Prelude (Unit)
 
 type ReturnedSelection e =  Eff (d3::D3, dom::DOM|e) D3Selection
 
@@ -22,9 +23,46 @@ foreign import d3SelectAllFn    :: ∀ e. EffFn2
                                         String
                                         D3Selection
                                         D3Selection
-foreign import d3DataFn         :: ∀ d e. EffFn2
+foreign import d3MergeFn        :: ∀ e. EffFn2
+                                        (d3::D3, dom::DOM|e)
+                                        D3Selection -- selection that is being merged
+                                        D3Selection -- original selection
+                                        D3Selection
+foreign import d3AppendFn       :: ∀ e. EffFn2
+                                        (d3::D3, dom::DOM|e)
+                                        D3ElementType -- this needs conversion from ADT
+                                        D3Selection
+                                        D3Selection
+foreign import d3RemoveFn       :: ∀ e. EffFn1
+                                        (d3::D3, dom::DOM|e)
+                                        D3Selection
+                                        Unit  -- no result from a Remove call
+foreign import d3EnterFn        :: ∀ e. EffFn1
+                                        (d3::D3, dom::DOM|e)
+                                        D3Selection
+                                        D3Selection
+foreign import d3ExitFn         :: ∀ e. EffFn1
+                                        (d3::D3, dom::DOM|e)
+                                        D3Selection
+                                        D3Selection
+foreign import d3TransitionFn   :: ∀ e. EffFn2
+                                        (d3::D3, dom::DOM|e)
+                                        D3Transition -- this needs conversion from ADT
+                                        D3Selection
+                                        D3Selection
+foreign import d3AttrsFn        :: ∀ d e. EffFn2
+                                          (d3::D3,dom::DOM|e)
+                                          (Array (Attr d)) -- needs to be converted from ADTs first
+                                          D3Selection
+                                          D3Selection
+foreign import d3DataAFn        :: ∀ d e. EffFn2
                                           (d3::D3, dom::DOM|e)
                                           (Array d)
+                                          D3Selection
+                                          D3Selection
+foreign import d3DataHFn        :: ∀ d e. EffFn2
+                                          (d3::D3, dom::DOM|e)
+                                          (Hierarchical d)
                                           D3Selection
                                           D3Selection
 
@@ -67,7 +105,7 @@ runD3 (Attrs _)
     = dummyD3Fn "Attrs"
 
 runD3 (DataA d)
-    = runEffFn2 d3DataFn d emptySelection
+    = runEffFn2 d3DataAFn d emptySelection
 
 runD3 (DataH _)
     = dummyD3Fn "DataH"
