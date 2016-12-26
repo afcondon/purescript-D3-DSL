@@ -3,8 +3,7 @@ module D3DSL.Base where
 import Color (Color)
 import Data.List
 import DOM.Event.Types (Event)
-import Prelude (class Ord, class Show, show, (<>), Unit)
-import DOM (DOM)
+import Prelude (class Show, show, (<>))
 
 type Selector = String
 
@@ -13,18 +12,25 @@ newtype Hierarchical d =
                  , children :: Array (Hierarchical d)
                  , datum    :: d
                  }
-foreign import data D3         :: ! -- the Effect of D3
-foreign import data Selection  :: *
-foreign import data Peers      :: * -- a D3Selection that's passed back in some callbacks
-foreign import data DomElement :: * -- the `this` pointer in a callback, DOM element receiving an event
 
-foreign import getAttrN :: ∀ d i. D3Selection d i -> String -> Number
-foreign import getAttrS :: ∀ d i. D3Selection d i -> String -> String
+
+-- ||               Core foreign imports
+-- the Effect of D3
+foreign import data D3          :: !
+-- the underlying D3 selection that is passed between calls
+foreign import data D3Selection :: *
+-- a Selection that's passed back in some callbacks
+foreign import data Peers       :: *
+-- the `this` pointer in a callback, DOM element receiving an event
+foreign import data DomElement  :: *
+
+foreign import getAttrN :: ∀ d i. Selection d i -> String -> Number
+foreign import getAttrS :: ∀ d i. Selection d i -> String -> String
 
 foreign import invisible :: String
 foreign import opaque    :: String
 
-type D3S d i = List (D3Selection d i)
+type D3S d i = List (Selection d i)
 
 data Duration = Seconds Int | MS Int
 
@@ -38,12 +44,12 @@ data Callback d b =   Lambda1 (d ->                                  b)
 data ValueOrCallback d b =  V b
                           | F (Callback d b)
 
-data D3Selection d i =
+data Selection d i =
      DocumentSelect    Selector
    | DocumentSelectAll Selector
    | Select            Selector
    | SelectAll         Selector
-   | Merge     (D3Selection d i)
+   | Merge     (Selection d i)
    | Append    D3ElementType
    | Remove
    | Enter
@@ -90,7 +96,7 @@ data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
 -- exception, unfortunately but it will be deterministic at least, seems like
 -- maybe GADT's are what's needed for this? not sure.
 
-instance showD3Selection :: Show d => Show (D3Selection d i) where
+instance showSelection :: Show d => Show (Selection d i) where
   show (DocumentSelect s)    = "DocumentSelect "    <> " \"" <> s <> "\""
   show (DocumentSelectAll s) = "DocumentSelectAll " <> " \"" <> s <> "\""
   show (Select select)       = "Select \""    <> select <> "\""

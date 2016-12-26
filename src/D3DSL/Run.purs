@@ -1,46 +1,55 @@
 module D3DSL.Run where
 
-import Data.List
+import Data.List (List, fromFoldable)
+import D3DSL.Base (D3, D3Selection, Selection(..))
 import Control.Monad.Eff (Eff)
 import DOM (DOM)
 import Data.Foldable (class Foldable)
-import D3DSL.Base
-import Prelude (Unit)
 
-foreign import runD3Fn :: ∀ d i eff. String -> Eff (d3::D3, dom::DOM|eff) Unit
+type ReturnedSelection e =  Eff (d3::D3, dom::DOM|e) D3Selection
 
-foreign import d3SelectFn :: ∀ d i eff. String -> Eff (d3::D3, dom::DOM|eff) Unit
+foreign import dummyD3Fn        :: ∀ e. String                     -> ReturnedSelection e
+
+foreign import d3SelectFn       :: ∀ e. String                     -> ReturnedSelection e
+
+foreign import d3SelectAllFn    :: ∀ e. String      -> D3Selection -> ReturnedSelection e
+
+foreign import d3DataFn         :: ∀ d e. (Array d) -> D3Selection -> ReturnedSelection e
 
 d3s :: forall f a. (Foldable f) => f a -> List a
 d3s = fromFoldable
 
-runD3 :: ∀ d i eff. D3Selection d i -> Eff (d3::D3, dom::DOM|eff) Unit
-runD3 (DocumentSelect selector)    = d3SelectFn selector
+-- we need to add the bound D3Selection into the sig at some point, but
+-- hopefully in some way hidden from the DSL
 
-runD3 (DocumentSelectAll _) = runD3Fn "DocumentSelectAll"
+-- runD3 :: ∀ d i e. Selection d i -> D3Selection -> Eff (d3::D3, dom::DOM|e) D3Selection
+runD3 :: ∀ d i e. Selection d i -> Eff (d3::D3, dom::DOM|e) D3Selection
+runD3 (DocumentSelect selector) = d3SelectFn selector
 
-runD3 (Select _)            = runD3Fn "Select"
+runD3 (DocumentSelectAll _) = dummyD3Fn "DocumentSelectAll"
 
-runD3 (SelectAll _)         = runD3Fn "SelectAll"
+runD3 (Select _)            = dummyD3Fn "Select"
 
-runD3 (Merge _)             = runD3Fn "Merge"
+runD3 (SelectAll _)         = dummyD3Fn "SelectAll"
 
-runD3 (Append _)            = runD3Fn "Append"
+runD3 (Merge _)             = dummyD3Fn "Merge"
 
-runD3 Remove                = runD3Fn "Remove"
+runD3 (Append _)            = dummyD3Fn "Append"
 
-runD3 Enter                 = runD3Fn "Enter"
+runD3 Remove                = dummyD3Fn "Remove"
 
-runD3 Exit                  = runD3Fn "Exit"
+runD3 Enter                 = dummyD3Fn "Enter"
 
-runD3 (Transition _)        = runD3Fn "Transition"
+runD3 Exit                  = dummyD3Fn "Exit"
 
-runD3 (Attrs _)             = runD3Fn "Attrs"
+runD3 (Transition _)        = dummyD3Fn "Transition"
 
-runD3 (DataA _)             = runD3Fn "DataA"
+runD3 (Attrs _)             = dummyD3Fn "Attrs"
 
-runD3 (DataH _)             = runD3Fn "DataH"
+runD3 (DataA _)             = dummyD3Fn "DataA"
 
-runD3 (DataAI _ _)          = runD3Fn "DataAI"
+runD3 (DataH _)             = dummyD3Fn "DataH"
 
-runD3 (DataHI _ _)          = runD3Fn "DataHI"
+runD3 (DataAI _ _)          = dummyD3Fn "DataAI"
+
+runD3 (DataHI _ _)          = dummyD3Fn "DataHI"

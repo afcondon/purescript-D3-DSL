@@ -1,6 +1,6 @@
 module GUPIII where
 
-import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, D3Selection(..), D3Transition(..), Duration(..), ValueOrCallback(..), invisible, opaque)
+import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, Selection(..), D3Transition(..), Duration(..), ValueOrCallback(..), invisible, opaque)
 import D3DSL.Run (d3s, runD3)
 import Control.Monad.Eff (Eff)
 import DOM (DOM)
@@ -16,8 +16,8 @@ height = 600.0  -- getAttrN svg "height"
 t :: D3Transition
 t = SimpleTransition $ MS 750
 
--- svg :: ∀ d i. D3Selection Char Char
-svg :: forall i d. D3Selection d i
+-- svg :: ∀ d i. Selection Char Char
+svg :: forall i d. Selection d i
 svg    = DocumentSelect "svg"
 
 join :: Array Char -> D3S Char Char
@@ -25,7 +25,7 @@ join myData  = d3s [ svg
                    , SelectAll "text"
                    , DataAI myData (\d -> d)]
 
--- exit :: D3Selection Char Char -> D3Selection Char Char
+-- exit :: Selection Char Char -> Selection Char Char
 exit :: D3S Char Char -> D3S Char Char
 exit s = s <> d3s [ Exit
                   , Attrs [ Class $ V "exit" ]
