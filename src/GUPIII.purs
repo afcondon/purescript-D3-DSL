@@ -1,10 +1,10 @@
 module GUPIII where
 
-import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, Selection(..), D3Transition(..), Duration(..), ValueOrCallback(..), invisible, opaque)
-import D3DSL.Run (d3s, runD3)
+import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, D3Action(..), D3Transition(..), Duration(..), ValueOrCallback(..), invisible, opaque)
+import D3DSL.Eval (d3s, evalD3)
 import Control.Monad.Eff (Eff)
 import DOM (DOM)
-import Prelude (Unit, negate, pure, show, unit, ($), (*), (<$>), (<>))
+import Prelude (Unit, negate, pure, show, unit, ($), (*), (<>))
 
 -- | purely declarative code to set up the computation
 width :: Number
@@ -16,8 +16,8 @@ height = 600.0  -- getAttrN svg "height"
 t :: D3Transition
 t = SimpleTransition $ MS 750
 
--- svg :: ∀ d i. Selection Char Char
-svg :: forall i d. Selection d i
+-- svg :: ∀ d i. D3Action Char Char
+svg :: forall i d. D3Action d i
 svg    = DocumentSelect "svg"
 
 join :: Array Char -> D3S Char Char
@@ -25,7 +25,7 @@ join myData  = d3s [ svg
                    , SelectAll "text"
                    , DataAI myData (\d -> d)]
 
--- exit :: Selection Char Char -> Selection Char Char
+-- exit :: D3Action Char Char -> D3Action Char Char
 exit :: D3S Char Char -> D3S Char Char
 exit s = s <> d3s [ Exit
                   , Attrs [ Class $ V "exit" ]
@@ -59,9 +59,6 @@ enter s = s <> d3s [ Enter
 -- D3 effect
 doUpdate :: ∀ e. Array Char -> Eff (d3::D3, dom::DOM|e) Unit
 doUpdate myData = do
-    -- result <- runD3 <$> (join myData)
     let selection = join myData
-    let result = runD3 <$> selection
-    pure unit -- $ runD3 <$> selection
-    -- where selection = join myData
-    --       result =
+    let result = evalD3 selection
+    pure unit

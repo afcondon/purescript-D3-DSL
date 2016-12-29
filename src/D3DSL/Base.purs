@@ -24,13 +24,13 @@ foreign import data Peers       :: *
 -- the `this` pointer in a callback, DOM element receiving an event
 foreign import data DomElement  :: *
 
-foreign import getAttrN :: ∀ d i. Selection d i -> String -> Number
-foreign import getAttrS :: ∀ d i. Selection d i -> String -> String
+foreign import getAttrN :: ∀ d i. D3Action d i -> String -> Number
+foreign import getAttrS :: ∀ d i. D3Action d i -> String -> String
 
 foreign import invisible :: String
 foreign import opaque    :: String
 
-type D3S d i = List (Selection d i)
+type D3S d i = List (D3Action d i)
 
 data Duration = Seconds Int | MS Int
 
@@ -44,12 +44,12 @@ data Callback d b =   Lambda1 (d ->                                  b)
 data ValueOrCallback d b =  V b
                           | F (Callback d b)
 
-data Selection d i =
+data D3Action d i =
      DocumentSelect    Selector
    | DocumentSelectAll Selector
    | Select            Selector
    | SelectAll         Selector
-   | Merge     (Selection d i)
+   | Merge     (D3Action d i)
    | Append    D3ElementType
    | Remove
    | Enter
@@ -96,7 +96,7 @@ data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
 -- exception, unfortunately but it will be deterministic at least, seems like
 -- maybe GADT's are what's needed for this? not sure.
 
-instance showSelection :: Show d => Show (Selection d i) where
+instance showD3Action :: Show d => Show (D3Action d i) where
   show (DocumentSelect s)    = "DocumentSelect "    <> " \"" <> s <> "\""
   show (DocumentSelectAll s) = "DocumentSelectAll " <> " \"" <> s <> "\""
   show (Select select)       = "Select \""    <> select <> "\""

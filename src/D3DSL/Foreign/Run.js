@@ -1,12 +1,20 @@
 /* global exports */
 "use strict"
 
-exports.d3SelectFn   = function (selector) {
+exports.d3DocSelectFn   = function (selector) {
     return d3.select(selector);
 }
 
+exports.d3DocSelectAllFn   = function (selector) {
+    return d3.selectAll(selector);
+}
+
+exports.d3SelectFn = function (selector, selection) {
+    return selection.select(selector);
+}
+
 exports.d3SelectAllFn = function (selector, selection) {
-    return selection(selector);
+    return selection.selectAll(selector);
 }
 
 exports.d3MergeFn = function (merged, original) {
@@ -51,10 +59,4 @@ var d3 = {
                 console.log("d3Select: " + selector);
             }
 
-}
-// other dummy / temporary stuff for development
-exports.emptySelection = {}
-exports.dummyD3Fn   = function (selection) {
-    console.log("dummyD3Fn: " + selection);
-    return exports.emptySelection;
 }
