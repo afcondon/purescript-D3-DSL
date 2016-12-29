@@ -44,10 +44,13 @@ data Callback d b =   Lambda1 (d ->                                  b)
 data ValueOrCallback d b =  V b
                           | F (Callback d b)
 
-data D3Action d i =
+
+data D3DocSelect d i =
      DocumentSelect    Selector
    | DocumentSelectAll Selector
-   | Select            Selector
+
+data D3Action d i =
+     Select            Selector
    | SelectAll         Selector
    | Merge     (D3Action d i)
    | Append    D3ElementType
@@ -95,10 +98,11 @@ data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
 -- invoked on - so that you can't put a radius on text etc. This will be runtime
 -- exception, unfortunately but it will be deterministic at least, seems like
 -- maybe GADT's are what's needed for this? not sure.
-
-instance showD3Action :: Show d => Show (D3Action d i) where
+instance showD3DocSelect :: Show d => Show (D3DocSelect d i) where
   show (DocumentSelect s)    = "DocumentSelect "    <> " \"" <> s <> "\""
   show (DocumentSelectAll s) = "DocumentSelectAll " <> " \"" <> s <> "\""
+
+instance showD3Action :: Show d => Show (D3Action d i) where
   show (Select select)       = "Select \""    <> select <> "\""
   show (SelectAll select)    = "SelectAll \"" <> select <> "\""
   show (Merge s)             = "Merge: \n\t"  <> show s <> "\n\t"
