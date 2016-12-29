@@ -11,16 +11,32 @@ import Data.List (List, fromFoldable, head, (:))
 import Data.Maybe (Maybe(..))
 import Prelude (($), (<$>), pure, Unit, unit, bind)
 
+type D3Effects e v = Eff (d3::D3,dom::DOM|e) v
+
+{- in this first cut we want to handle the simple case where you have a List of
+D3Actions which is completely self-contained - ie you haven't cached the
+D3Selection in the pure code anywhere so you are definitely starting with a
+DocumentSelect or a DocumentSelectAll -}
+evalD3 :: ∀ d i e. D3S d i -> D3Effects e Unit
+evalD3 (firstAction:rest) = do
+    initialSelect <- runD3Action firstAction (Left Uninitialized)
+    pure unit
+evalD3 _ = pure unit
+
 d3s :: forall f a. (Foldable f) => f a -> List a
 d3s = fromFoldable
 
-runD3Action :: ∀ d i e. D3Action d i -> PossibleSelection -> Eff (d3::D3, dom::DOM|e) PossibleSelection
-runD3Action (DocumentSelect selector) _ -- don't care about PossibleSelection if making new docSelect
+runD3InitAction :: ∀ d i e. D3Action d i -> PossibleSelection -> Eff (d3::D3, dom::DOM|e) PossibleSelection
+runD3InitAction (DocumentSelect selector) _ -- don't care about PossibleSelection if making new docSelect
     = Right <$> runEffFn1 d3DocSelectFn selector
 
-runD3Action (DocumentSelectAll selector) _ -- don't care about PossibleSelection if making new docSelect
+runD3InitAction (DocumentSelectAll selector) _ -- don't care about PossibleSelection if making new docSelect
     = Right <$> runEffFn1 d3DocSelectAllFn selector
 
+runD3InitAction _ _ = pure $ Left $ JSerr "tried to runD3InitAction on non-initializing Action"
+
+
+runD3Action :: ∀ d i e. D3Action d i -> PossibleSelection -> Eff (d3::D3, dom::DOM|e) PossibleSelection
 runD3Action (Select selector) (Right selection)
     = Right <$> runEffFn2 d3SelectFn selector selection
 
@@ -63,15 +79,3 @@ runD3Action (DataHI _ _)
     = dummyD3Fn "DataHI"
 
 -}
-type D3Effects e v = Eff (d3::D3,dom::DOM|e) v
-
--- headAsEither :: ∀ d err. err -> List d -> Either err d
--- headAsEither err l = case head l of
---                      Nothing -> Left err
---                      Just el -> Right el
-
-evalD3 :: ∀ d i e. D3S d i -> D3Effects e Unit
-evalD3 (firstAction:rest) = do
-    initialSelect <- runD3Action firstAction (Left Uninitialized)
-    pure unit
-evalD3 _ = pure unit
