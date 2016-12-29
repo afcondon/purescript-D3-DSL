@@ -7,18 +7,16 @@ import DOM (DOM)
 import Data.Either (Either(..))
 import Data.Foldable (class Foldable)
 import Data.Function.Eff (runEffFn1, runEffFn2)
-import Data.List (List, fromFoldable, (:))
-import Prelude (($), (<$>), pure, Unit, unit, bind)
+import Data.List (List, fromFoldable)
+import Prelude (pure, ($), (<$>))
 
 type D3Effects e v = Eff (d3::D3,dom::DOM|e) v
 
 d3s :: forall f a. (Foldable f) => f a -> List a
 d3s = fromFoldable
 
-d3InitEval :: ∀ d i e. D3DocSelect d i -> D3Effects e Unit
-d3InitEval docSelect = do
-    initialSelect <- runD3InitAction docSelect
-    pure unit
+d3InitEval :: ∀ d i e. D3DocSelect d i -> D3Effects e PossibleSelection
+d3InitEval docSelect = runD3InitAction docSelect
 
 d3EvalActions :: ∀ d i e. PossibleSelection -> D3S d i -> D3Effects e PossibleSelection
 d3EvalActions (Right selection) actions = pure $ Right selection

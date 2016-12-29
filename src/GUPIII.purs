@@ -1,10 +1,10 @@
 module GUPIII where
 
-import D3DSL.Base (Attr(..), Callback(..), D3, D3ElementType(..), D3S, D3Action(..), D3Transition(..), Duration(..), ValueOrCallback(..), invisible, opaque)
-import D3DSL.Eval (d3s, d3InitEval, d3EvalActions)
 import Control.Monad.Eff (Eff)
+import D3DSL.Base (Attr(..), Callback(..), D3, D3Action(..), D3DocSelect(..), D3ElementType(..), D3S, D3Transition(..), Duration(..), ValueOrCallback(..), invisible, opaque)
+import D3DSL.Eval (d3s, d3InitEval, d3EvalActions)
 import DOM (DOM)
-import Prelude (Unit, negate, pure, show, unit, ($), (*), (<>))
+import Prelude (Unit, bind, negate, pure, show, unit, ($), (*), (<>))
 
 -- | purely declarative code to set up the computation
 width :: Number
@@ -17,12 +17,11 @@ t :: D3Transition
 t = SimpleTransition $ MS 750
 
 -- svg :: ∀ d i. D3Action Char Char
-svg :: forall i d. D3Action d i
+svg :: forall i d. D3DocSelect d i
 svg    = DocumentSelect "svg"
 
 join :: Array Char -> D3S Char Char
-join myData  = d3s [ svg
-                   , SelectAll "text"
+join myData  = d3s [ SelectAll "text"
                    , DataAI myData (\d -> d)]
 
 -- exit :: D3Action Char Char -> D3Action Char Char
@@ -59,6 +58,6 @@ enter s = s <> d3s [ Enter
 -- D3 effect
 doUpdate :: ∀ e. Array Char -> Eff (d3::D3, dom::DOM|e) Unit
 doUpdate myData = do
-    let selection = join myData
-    let result = evalD3 selection
+    possSelection <- d3InitEval svg
+    d3EvalActions possSelection (join myData)
     pure unit

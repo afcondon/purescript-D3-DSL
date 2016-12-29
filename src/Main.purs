@@ -7,11 +7,11 @@ import Data.String (toCharArray)
 
 import D3DSL.Base (D3)
 import DOM (DOM)
-import GUPIII (doUpdate, enter, exit, join, update)
+import GUPIII (enter, exit, join, update)
 
 main :: forall e. Eff (d3::D3, dom::DOM, console :: CONSOLE | e) Unit
 main = do
-    doUpdate (toCharArray "this is this")
+    -- doUpdate (toCharArray "this is this")
     log $ show (join   $ toCharArray "this is this")
     log $ show (update $ join $ toCharArray "this is this")
     log $ show (exit   $ join $ toCharArray "this is this")
