@@ -1,8 +1,9 @@
 module D3DSL.Base where
 
-import Color (Color)
 import Data.List
+import Color (Color)
 import DOM.Event.Types (Event)
+import Data.Either (Either)
 import Prelude (class Show, show, (<>))
 
 type Selector = String
@@ -23,6 +24,12 @@ foreign import data D3Selection :: *
 foreign import data Peers       :: *
 -- the `this` pointer in a callback, DOM element receiving an event
 foreign import data DomElement  :: *
+
+type PossibleSelection = Either D3Err D3Selection
+data D3Err             = Uninitialized
+                       | EmptyActionList
+                       | JSerr String
+                       | SelectionRemoved
 
 foreign import getAttrN :: ∀ d i. D3Action d i -> String -> Number
 foreign import getAttrS :: ∀ d i. D3Action d i -> String -> String
@@ -52,7 +59,7 @@ data D3DocSelect d i =
 data D3Action d i =
      Select            Selector
    | SelectAll         Selector
-   | Merge     (D3Action d i)
+   | Merge     PossibleSelection
    | Append    D3ElementType
    | Remove
    | Enter
@@ -105,7 +112,7 @@ instance showD3DocSelect :: Show d => Show (D3DocSelect d i) where
 instance showD3Action :: Show d => Show (D3Action d i) where
   show (Select select)       = "Select \""    <> select <> "\""
   show (SelectAll select)    = "SelectAll \"" <> select <> "\""
-  show (Merge s)             = "Merge: \n\t"  <> show s <> "\n\t"
+  show (Merge _)             = "Merge: <D3 Selection can't be shown>"
   show (Append element)      = "Append " <> show element <>  " to "
   show (Remove)              = "Remove"
   show (Enter)               = "Enter"

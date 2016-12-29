@@ -2,13 +2,13 @@ module D3DSL.Eval where
 
 import D3DSL.Foreign.Run
 import Control.Monad.Eff (Eff)
-import D3DSL.Base (D3, D3Action(..), D3DocSelect(..), D3S)
+import D3DSL.Base (D3, D3Action(..), D3DocSelect(..), D3S, PossibleSelection, D3Err(..))
 import DOM (DOM)
 import Data.Either (Either(..))
 import Data.Foldable (class Foldable)
 import Data.Function.Eff (runEffFn1, runEffFn2)
 import Data.List (List, fromFoldable)
-import Prelude (pure, ($), (<$>))
+import Prelude (pure, ($), (<$>), bind)
 
 type D3Effects e v = Eff (d3::D3,dom::DOM|e) v
 
@@ -33,23 +33,25 @@ runD3Action (Select selector) (Right selection)
 runD3Action (SelectAll selector) (Right selection)
     = Right <$> runEffFn2 d3SelectAllFn selector selection
 
+runD3Action (Merge (Right original)) (Right merged)
+    = Right <$> runEffFn2 d3MergeFn merged original
+
+runD3Action Remove (Right selection)
+    = do
+        runEffFn1 d3RemoveFn selection
+        pure $ Left SelectionRemoved
+
+runD3Action Enter (Right selection)
+    = Right <$> runEffFn1 d3EnterFn selection
+
+runD3Action Exit (Right selection)
+    = Right <$> runEffFn1 d3ExitFn selection
+
+-- runD3Action (Append _)
+--     = dummyD3Fn "Append"
+
 runD3Action _ _ = pure $ Left $ JSerr "unhandled action in runD3Action"
 {-
-runD3Action (Merge _)
-    = dummyD3Fn "Merge"
-
-runD3Action (Append _)
-    = dummyD3Fn "Append"
-
-runD3Action Remove
-    = dummyD3Fn "Remove"
-
-runD3Action Enter
-    = dummyD3Fn "Enter"
-
-runD3Action Exit
-    = dummyD3Fn "Exit"
-
 runD3Action (Transition _)
     = dummyD3Fn "Transition"
 

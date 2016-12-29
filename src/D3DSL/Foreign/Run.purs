@@ -2,15 +2,8 @@ module D3DSL.Foreign.Run where
 
 import D3DSL.Base (Attr, D3, D3ElementType, D3Selection, D3Transition, Hierarchical)
 import DOM (DOM)
-import Data.Either (Either)
 import Data.Function.Eff (EffFn1, EffFn2)
 import Prelude (Unit)
-
--- | PossibleSelection is the monad for D3 actions, it starts out empty (Left D3Err)
--- before a Selection has been made and continues (Right) thru the calculation
--- this might actually violate the Monad laws in which case it should be re-thought
-type PossibleSelection = Either D3Err D3Selection
-data D3Err          = Uninitialized | EmptyActionList | JSerr String
 
 -- | All the foreign effectful functions
 foreign import d3DocSelectFn ::
