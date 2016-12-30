@@ -2,7 +2,7 @@ module D3DSL.Eval where
 
 import D3DSL.Foreign.Run
 import Control.Monad.Eff (Eff)
-import D3DSL.Base (D3, D3Action(..), D3DocSelect(..), D3ElementType(..), D3Err(..), D3S, PossibleSelection)
+import D3DSL.Base (Attr(..), D3, D3Action(..), D3DocSelect(..), D3ElementType(..), D3Err(..), D3S, D3Selection, PossibleSelection)
 import DOM (DOM)
 import Data.Either (Either(..))
 import Data.Foldable (class Foldable)
@@ -59,21 +59,58 @@ runD3Action (DataAI d indexfn) (Right selection)
 runD3Action (DataHI d indexfn) (Right selection)
     = Right <$> runEffFn3 d3DataHIFn d indexfn selection
 
+runD3Action (Insert el) (Right selection)
+    = Right <$> runEffFn2 d3AppendFn (toString el) selection
+
 runD3Action (Append el) (Right selection)
-    = Right <$> runEffFn2 d3AppendFn element selection
-    where element = case el of
-                    SvgCircle -> "circle"
-                    SvgRect   -> "rect"
-                    SvgPath   -> "path"
-                    SvgImage  -> "image"
-                    SvgText   -> "text"
-                    SvgGroup  -> "g"
+    = Right <$> runEffFn2 d3AppendFn (toString el) selection
 
 runD3Action _ _ = pure $ Left $ JSerr "unhandled action in runD3Action"
-{-
-runD3Action (Append _)
-    = dummyD3Fn "Append"
 
+
+
+-- runD3Attr :: ∀ d. Attr d -> D3Selection -> D3Selection
+-- runD3Attr attr
+
+-- || ===================== Utilities =================
+attrToString :: ∀ d. Attr d -> String
+attrToString (CX _)     = "cx"
+attrToString (CY _)     = "cy"
+attrToString (R _)      = "r"
+attrToString (X _)      = "x"
+attrToString (Y _)      = "y"
+attrToString (DX _)     = "dx"
+attrToString (DY _)     = "dy"
+attrToString (Height _)        = "height"
+attrToString (Width _)         = "width"
+attrToString (StrokeWidth _)   = "stroke-width"
+attrToString (StrokeOpacity _) = "stroke-opacity"
+attrToString (FillOpacity _)   = "fill-opacity"
+attrToString (Opacity _)       = "opacity"
+attrToString (D _)             = "d"
+attrToString (Id _)            = "id"
+attrToString (StrokeLineCap _) = "stroke-linecap"
+attrToString (PatternUnits _)  = "patternunits"
+attrToString (Style _ _)       = "style"
+attrToString (Class _)         = "class"
+attrToString (Text _)          = "text"
+attrToString (Type _)          = "type"
+attrToString (Fill _)          = "fill"
+attrToString (Stroke _)        = "stroke"
+attrToString (Transform _)     = "transform"
+attrToString (EventHandlerS _ _) = "eventhandlers"
+attrToString (EventHandlerN _ _) = "eventhandlern"
+
+toString :: D3ElementType -> String
+toString el = case el of
+                SvgCircle -> "circle"
+                SvgRect   -> "rect"
+                SvgPath   -> "path"
+                SvgImage  -> "image"
+                SvgText   -> "text"
+                SvgGroup  -> "g"
+
+{-
 runD3Action (Transition _)
     = dummyD3Fn "Transition"
 

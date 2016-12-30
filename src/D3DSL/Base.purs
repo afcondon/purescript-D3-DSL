@@ -72,11 +72,12 @@ data D3Action d i =
    | DataAI    (Array d)        (d -> i)
    | DataHI    (Hierarchical d) (d -> i)
 
--- ADT for the SVG primitives (which are relatively few)
--- at present no support for untyped elements, let's just see if it's necessary
--- it will be necessary to add types for ALL of the HTML elements if there is
+-- ADT for the SVG primitives (which are relatively few). At present no support
+-- for general (ie untyped) elements, let's just see if it's necessary. It will
+-- be necessary to add types for (almost?) ALL of the HTML elements if there is
 -- no untyped form so maybe get the element types for HTML from another lib or
 -- go with untyped option too or just make it all untyped
+
 data D3ElementType
     =     SvgCircle
         -- | SvgEllipse
@@ -90,6 +91,21 @@ data D3ElementType
         | SvgRect
         | SvgText
         -- | SvgUse
+
+-- as with the element types above there are a LOT of SVG attribute types:
+-- alignment-baseline, baseline-shift, clip, clip-path, clip-rule, color,
+-- color-interpolation, color-interpolation-filters, color-profile,
+-- color-rendering, cursor, direction, display, dominant-baseline,
+-- enable-background, fill, fill-opacity, fill-rule, filter, flood-color,
+-- flood-opacity, font-family, font-size, font-size-adjust, font-stretch,
+-- font-style, font-variant, font-weight, glyph-orientation-horizontal,
+-- glyph-orientation-vertical, image-rendering, kerning, letter-spacing,
+-- lighting-color, marker-end, marker-mid, marker-start, mask, opacity,
+-- overflow, pointer-events, shape-rendering, stop-color, stop-opacity, stroke,
+-- stroke-dasharray, stroke-dashoffset, stroke-linecap, stroke-linejoin,
+-- stroke-miterlimit, stroke-opacity, stroke-width, text-anchor,
+-- text-decoration, text-rendering, unicode-bidi, visibility, word-spacing,
+-- writing-mode
 
 type SVGPathString = String -- could validate this here at least with runtime constructor
 data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
@@ -115,7 +131,7 @@ data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
              | Type                (ValueOrCallback d String) -- images only
              | Fill                (ValueOrCallback d Color)
              | Stroke              (ValueOrCallback d Color)
-             | Transform    String
+             | Transform    String  -- would be nice to build this up from ADT too
              | EventHandlerS Event (Callback d String) -- click | mouseenter | mouseleave | mouseover
              | EventHandlerN Event (Callback d Number)
 
@@ -174,10 +190,10 @@ instance showAttr :: Show (Attr d) where
   show (Class a)         = "Class " <> show a
   show (Text a)          = "Text " <> show a
   show (Type a)          = "Type " <> show a
-  show (Style style attr) = "Style " <> style <> " " <> show attr
+  show (Style style attr)    = "Style " <> style <> " " <> show attr
   show (Transform translate) = "Transform(" <> translate <> ")"
-  show (EventHandlerS ev _) = "EventHandlerS for " <> eventToString ev
-  show (EventHandlerN ev _) = "EventHandlerN for " <> eventToString ev
+  show (EventHandlerS ev _)  = "EventHandlerS for " <> eventToString ev
+  show (EventHandlerN ev _)  = "EventHandlerN for " <> eventToString ev
 
 instance showValueOrCallback :: Show (ValueOrCallback d b) where
   show (V _)  = "Value"
