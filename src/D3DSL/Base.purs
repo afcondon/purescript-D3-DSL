@@ -60,6 +60,7 @@ data D3Action d i =
      Select            Selector
    | SelectAll         Selector
    | Merge     PossibleSelection
+   | Insert    D3ElementType
    | Append    D3ElementType
    | Remove
    | Enter
@@ -71,7 +72,24 @@ data D3Action d i =
    | DataAI    (Array d)        (d -> i)
    | DataHI    (Hierarchical d) (d -> i)
 
-data D3ElementType = SvgCircle | SvgRect | SvgPath | SvgImage | SvgText | SvgGroup
+-- ADT for the SVG primitives (which are relatively few)
+-- at present no support for untyped elements, let's just see if it's necessary
+-- it will be necessary to add types for ALL of the HTML elements if there is
+-- no untyped form so maybe get the element types for HTML from another lib or
+-- go with untyped option too or just make it all untyped
+data D3ElementType
+    =     SvgCircle
+        -- | SvgEllipse
+        | SvgGroup
+        | SvgImage
+        -- | SvgLine
+        -- | SvgMesh
+        | SvgPath
+        -- | SvgPolygon
+        -- | SvgPolyline
+        | SvgRect
+        | SvgText
+        -- | SvgUse
 
 type SVGPathString = String -- could validate this here at least with runtime constructor
 data Attr d  = CX                  (ValueOrCallback d Number)  -- circles only
@@ -113,6 +131,7 @@ instance showD3Action :: Show d => Show (D3Action d i) where
   show (Select select)       = "Select \""    <> select <> "\""
   show (SelectAll select)    = "SelectAll \"" <> select <> "\""
   show (Merge _)             = "Merge: <D3 Selection can't be shown>"
+  show (Insert element)      = "Insert " <> show element <>  " to "
   show (Append element)      = "Append " <> show element <>  " to "
   show (Remove)              = "Remove"
   show (Enter)               = "Enter"

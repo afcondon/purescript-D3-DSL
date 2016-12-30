@@ -13,6 +13,8 @@ exports.d3MergeFn = function (merged, original) { return orignal.merge(merged); 
 
 exports.d3AppendFn = function (element, selection) { return selection.append(element); }
 
+exports.d3InsertFn = function (element, selection) { return selection.insert(element); }
+
 exports.d3RemoveFn = function(selection) { return selection.remove(); }
 
 exports.d3EnterFn = function(selection) { return selection.enter(); }

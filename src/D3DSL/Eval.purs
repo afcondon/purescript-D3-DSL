@@ -2,7 +2,7 @@ module D3DSL.Eval where
 
 import D3DSL.Foreign.Run
 import Control.Monad.Eff (Eff)
-import D3DSL.Base (D3, D3Action(..), D3DocSelect(..), D3S, PossibleSelection, D3Err(..))
+import D3DSL.Base (D3, D3Action(..), D3DocSelect(..), D3ElementType(..), D3Err(..), D3S, PossibleSelection)
 import DOM (DOM)
 import Data.Either (Either(..))
 import Data.Foldable (class Foldable)
@@ -58,6 +58,16 @@ runD3Action (DataAI d indexfn) (Right selection)
 
 runD3Action (DataHI d indexfn) (Right selection)
     = Right <$> runEffFn3 d3DataHIFn d indexfn selection
+
+runD3Action (Append el) (Right selection)
+    = Right <$> runEffFn2 d3AppendFn element selection
+    where element = case el of
+                    SvgCircle -> "circle"
+                    SvgRect   -> "rect"
+                    SvgPath   -> "path"
+                    SvgImage  -> "image"
+                    SvgText   -> "text"
+                    SvgGroup  -> "g"
 
 runD3Action _ _ = pure $ Left $ JSerr "unhandled action in runD3Action"
 {-

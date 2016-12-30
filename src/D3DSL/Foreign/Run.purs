@@ -1,6 +1,6 @@
 module D3DSL.Foreign.Run where
 
-import D3DSL.Base (Attr, D3, D3ElementType, D3Selection, D3Transition, Hierarchical)
+import D3DSL.Base (Attr, D3, D3Selection, D3Transition, Hierarchical)
 import DOM (DOM)
 import Data.Function.Eff (EffFn1, EffFn2, EffFn3)
 import Prelude (Unit)
@@ -16,8 +16,10 @@ foreign import d3SelectAllFn ::
 	∀ e. EffFn2 (d3::D3, dom::DOM|e) String D3Selection D3Selection
 foreign import d3MergeFn ::
 	∀ e. EffFn2 (d3::D3, dom::DOM|e) D3Selection D3Selection D3Selection
-foreign import d3AppendFn ::                -- D3ElementType needs conversion from ADT
-	∀ e. EffFn2 (d3::D3, dom::DOM|e) D3ElementType D3Selection D3Selection
+foreign import d3AppendFn ::
+	∀ e. EffFn2 (d3::D3, dom::DOM|e) String D3Selection D3Selection
+foreign import d3InsertFn ::
+	∀ e. EffFn2 (d3::D3, dom::DOM|e) String D3Selection D3Selection
 foreign import d3RemoveFn ::
 	∀ e. EffFn1 (d3::D3, dom::DOM|e) D3Selection Unit -- no result from a Remove call
 foreign import d3EnterFn ::
