@@ -6,7 +6,7 @@ import D3DSL.Base (D3, D3Action(..), D3DocSelect(..), D3S, PossibleSelection, D3
 import DOM (DOM)
 import Data.Either (Either(..))
 import Data.Foldable (class Foldable)
-import Data.Function.Eff (runEffFn1, runEffFn2)
+import Data.Function.Eff (runEffFn1, runEffFn2, runEffFn3)
 import Data.List (List, fromFoldable)
 import Prelude (pure, ($), (<$>), bind)
 
@@ -47,27 +47,27 @@ runD3Action Enter (Right selection)
 runD3Action Exit (Right selection)
     = Right <$> runEffFn1 d3ExitFn selection
 
--- runD3Action (Append _)
---     = dummyD3Fn "Append"
+runD3Action (DataA d) (Right selection)
+    = Right <$> runEffFn2 d3DataAFn d selection
+
+runD3Action (DataH h) (Right selection)
+    = Right <$> runEffFn2 d3DataHFn h selection
+
+runD3Action (DataAI d indexfn) (Right selection)
+    = Right <$> runEffFn3 d3DataAIFn d indexfn selection
+
+runD3Action (DataHI d indexfn) (Right selection)
+    = Right <$> runEffFn3 d3DataHIFn d indexfn selection
 
 runD3Action _ _ = pure $ Left $ JSerr "unhandled action in runD3Action"
 {-
+runD3Action (Append _)
+    = dummyD3Fn "Append"
+
 runD3Action (Transition _)
     = dummyD3Fn "Transition"
 
 runD3Action (Attrs _)
     = dummyD3Fn "Attrs"
-
-runD3Action (DataA d)
-    = runEffFn2 d3DataAFn d emptySelection
-
-runD3Action (DataH _)
-    = dummyD3Fn "DataH"
-
-runD3Action (DataAI _ _)
-    = dummyD3Fn "DataAI"
-
-runD3Action (DataHI _ _)
-    = dummyD3Fn "DataHI"
 
 -}

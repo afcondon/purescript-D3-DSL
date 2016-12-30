@@ -2,7 +2,7 @@ module D3DSL.Foreign.Run where
 
 import D3DSL.Base (Attr, D3, D3ElementType, D3Selection, D3Transition, Hierarchical)
 import DOM (DOM)
-import Data.Function.Eff (EffFn1, EffFn2)
+import Data.Function.Eff (EffFn1, EffFn2, EffFn3)
 import Prelude (Unit)
 
 -- | All the foreign effectful functions
@@ -32,3 +32,7 @@ foreign import d3DataAFn ::
 	∀ d e. EffFn2 (d3::D3, dom::DOM|e) ( Array d) D3Selection D3Selection
 foreign import d3DataHFn ::
 	∀ d e. EffFn2 (d3::D3, dom::DOM|e) ( Hierarchical d) D3Selection D3Selection
+foreign import d3DataAIFn ::
+	∀ d i e. EffFn3 (d3::D3, dom::DOM|e) ( Array d) (d -> i) D3Selection D3Selection
+foreign import d3DataHIFn ::
+	∀ d i e. EffFn3 (d3::D3, dom::DOM|e) ( Hierarchical d) (d -> i) D3Selection D3Selection
